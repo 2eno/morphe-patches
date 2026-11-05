@@ -12,6 +12,7 @@ import app.twoeno.patches.shared.EXTENSION
 import app.twoeno.patches.shared.EXTENSION_PACKAGE
 import app.twoeno.patches.shared.parameterRegister
 import app.twoeno.patches.spotify.FormatAndroidShareSheetUrlFingerprint
+import app.twoeno.patches.spotify.FormatAndroidShareSheetUrlStringFingerprint
 import app.twoeno.patches.spotify.OldFormatAndroidShareSheetUrlFingerprint
 import app.twoeno.patches.spotify.OldShareCopyUrlFingerprint
 import app.twoeno.patches.spotify.ShareCopyUrlFingerprint
@@ -54,7 +55,11 @@ val sanitizeSharingLinksPatch = bytecodePatch(
         }
 
         // Share sheet: sanitize the url parameter of the share message formatter.
-        (FormatAndroidShareSheetUrlFingerprint.methodOrNull ?: OldFormatAndroidShareSheetUrlFingerprint.method).apply {
+        (
+            FormatAndroidShareSheetUrlFingerprint.methodOrNull
+                ?: FormatAndroidShareSheetUrlStringFingerprint.methodOrNull
+                ?: OldFormatAndroidShareSheetUrlFingerprint.method
+        ).apply {
             val urlRegister = parameterRegister(1)
             addInstructions(
                 0,

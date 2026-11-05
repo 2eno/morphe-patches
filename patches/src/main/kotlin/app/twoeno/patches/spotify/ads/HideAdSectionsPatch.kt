@@ -20,15 +20,21 @@ private const val EXTENSION_CLASS = "$EXTENSION_PACKAGE/spotify/HideAdSectionsPa
 /**
  * Filters the `sections_` list returned by the getters of the protobuf message class.
  *
+ * Newer app versions declare the getter with the obfuscated protobuf list type
+ * (which implements [java.util.List]) instead of `java.util.List`, so both are accepted.
+ *
  * @return If the message class was found.
  */
 context(_: BytecodePatchContext)
 private fun Fingerprint.filterReturnedSections(extensionMethod: String): Boolean {
     val getters = classDefOrNull?.methods?.filter { method ->
-        method.returnType == "Ljava/util/List;" &&
+        method.parameterTypes.isEmpty() &&
             method.implementation?.instructions?.any { instruction ->
-                instruction.opcode == Opcode.IGET_OBJECT &&
-                    instruction.getReference<FieldReference>()?.name == "sections_"
+                if (instruction.opcode != Opcode.IGET_OBJECT) return@any false
+                val field = instruction.getReference<FieldReference>() ?: return@any false
+
+                field.name == "sections_" &&
+                    (method.returnType == "Ljava/util/List;" || method.returnType == field.type)
             } == true
     }
     if (getters.isNullOrEmpty()) return false

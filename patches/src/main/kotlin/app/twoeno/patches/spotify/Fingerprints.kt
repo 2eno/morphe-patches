@@ -5,6 +5,7 @@ import app.morphe.patcher.fieldAccess
 import app.morphe.patcher.literal
 import app.morphe.patcher.methodCall
 import app.morphe.patcher.opcode
+import app.morphe.patcher.string
 import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 
@@ -111,6 +112,16 @@ internal object FormatAndroidShareSheetUrlFingerprint : Fingerprint(
     returnType = "Ljava/lang/String;",
     parameters = listOf("L", "Ljava/lang/String;"),
     filters = listOf(literal('\n'.code.toLong())),
+)
+
+/**
+ * Newer app versions join the share message with a `"\n"` string instead of a char.
+ */
+internal object FormatAndroidShareSheetUrlStringFingerprint : Fingerprint(
+    accessFlags = listOf(AccessFlags.PUBLIC, AccessFlags.STATIC),
+    returnType = "Ljava/lang/String;",
+    parameters = listOf("L", "Ljava/lang/String;"),
+    filters = listOf(string("\n")),
 )
 
 internal object OldFormatAndroidShareSheetUrlFingerprint : Fingerprint(

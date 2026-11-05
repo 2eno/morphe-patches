@@ -32,6 +32,15 @@ internal object GetViewModelFingerprint : Fingerprint(
     parameters = listOf(),
 )
 
+/**
+ * Constructor of the base class of all esperanto clients, which takes the esperanto transport.
+ */
+internal object CoroutineClientBaseConstructorFingerprint : Fingerprint(
+    definingClass = "Lcom/spotify/esperanto/esperanto/CoroutineClientBase;",
+    name = "<init>",
+    parameters = listOf("Lcom/spotify/esperanto/esperanto/CoroutineTransport;"),
+)
+
 internal object HomeStructureGetSectionsFingerprint : Fingerprint(
     definingClass = "homeapi/proto/HomeStructure;",
     filters = listOf(fieldAccess(name = "sections_", opcode = Opcode.IGET_OBJECT)),
